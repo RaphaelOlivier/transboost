@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-Created in mars 2017 
+Created in may 2017 
 
 @author: Raphaël Olivier
 
 Class to encapsulate transBoost and save results.
 """
 
+from __future__ import print_function
 from os import mkdir
 from tools.display import *
 import boosting
+
 class TransBoost:
     def __init__(self):
         self.X_train, self.y_train, self.X_test, self.y_test = None,None,None,None
@@ -43,12 +45,12 @@ class TransBoost:
 
     def checkparamslearning(self):
         if(self.X_train==None or self.y_train==None or self.hs==None or self.K==None or self.projFinder==None):
-            print "param error"
+            print("param error")
             raise
     
     def checkparamstesting(self):
         if(self.X_test==None or self.y_test==None or self.hs==None or self.projections==None or self.alphas==None):
-            print "param error"
+            print("param error")
             raise
     
     def learn(self):
@@ -80,13 +82,13 @@ class TransBoost:
         return err
 
     def printResults(self):
-        print self.log["step"]+" : "+str(self.log["results"])
+        print (self.log["step"]+" : "+str(self.log["results"]))
     
     def printLog(self,logFile=None):
         if logFile==None:
             for i in range(len(self.log)):
-                print i
-                print self.log[i]
+                print(i)
+                print(self.log[i])
         else:
             for i in range(len(self.log)):
                 displayDict(title="step number "+str(i),dic=self.log[i],logFile=logFile)

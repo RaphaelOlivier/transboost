@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created in mars 2017 
+Created in may 2017 
 
 @author: Raphaël Olivier
 """
+from __future__ import print_function
 import boosting
 import numpy as np
 import time
@@ -208,6 +209,6 @@ class Projections:
         self.params=self.params[-1:]
         
     def printProjections(self): #affiche les projecteurs
-        print "Projections :"
+        print("Projections :")
         for i in range(len(self.projections)):
-            print str(self.projections[i].__name__), str(self.params[i])
+            print(str(self.projections[i].__name__), str(self.params[i]))

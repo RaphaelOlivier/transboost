@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 # -*- coding: utf-8 -*-
 """
-Created in mars 2017 
+Created in may 2017 
 
 @author: Raphaël Olivier
 
 #material for using TransBoost with time series : hypothesis and projection functions
 """
 
+from __future__ import print_function
 import numpy as np
 import tools.svm as svm
 from scipy.optimize import leastsq

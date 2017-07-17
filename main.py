@@ -13,7 +13,7 @@ D = [[0.001],[0.002],[0.02], [0.2], [1]]
 sl = [1000, 700, 400, 200, 100]
 
 D = [[0.001], [1]]
-sl = [1000, 100]
+sl = [1000]
 
 ds_list=[]
 
@@ -23,7 +23,7 @@ for d in D:
         
         
 results="log/test_for_git.csv"
-n=3
+n=2
 testseries(L_list=L_list,l_list=l_list,K_list=K_list,ds_list=ds_list,resultsFile=results,n=n)
 
 """

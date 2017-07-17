@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import numpy as np
 import pandas as pd
 import tools.data as data
@@ -55,7 +56,7 @@ def testseries(L_list, l_list, K_list, ds_list, resultsFile=None,n=10):
                     if(resultsFile!=None):
                         aggres.to_csv(resultsFile)                    
                     
-                    print "Fin du test"
+                    print("Fin du test")
                     
 def singletest(L, l, K, hs, X_train, y_train, X_test, y_test):
 
@@ -86,11 +87,11 @@ def singletest(L, l, K, hs, X_train, y_train, X_test, y_test):
     eTrain=tb.learn()
     eTest=tb.run()
     log=tb.getLog()
-    print log
+    print(log)
     return eTrain, eTest
     
 def svmreg(L, l, hs, X_train, y_train, X_test, y_test):
-    print "regression"
+    print("regression")
     def hreg(X):
         Z=np.zeros((X.shape[0],L))
         for i in np.arange(X.shape[0]):
@@ -106,7 +107,6 @@ def svmreg(L, l, hs, X_train, y_train, X_test, y_test):
     return eTrain, eTest
 
 def simplifyCSV(path):
-    print "Hello world"
     
     df = pd.read_csv(path)
     numcols=["source score", "reference train score","reference test score", "transBoost train score", "transBoost test score"]

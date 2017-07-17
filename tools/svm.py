@@ -72,7 +72,6 @@ def testSVM(clf, X, y, D = None,logFile=None):
         D = np.array(np.ones(len(y))/len(y))
         
     y_predit = clf.predict(X)
-    #print y.shape, y_predit.shape
     err_test = weightedError(y, y_predit, D)
     return err_test, y_predit
 

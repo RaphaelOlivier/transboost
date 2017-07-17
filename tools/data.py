@@ -7,6 +7,7 @@ Created on Mon Jun 15 10:07:37 2015
 Files and datasets manipulation
 """
 
+from __future__ import print_function
 import random
 import numpy as np
 import csv

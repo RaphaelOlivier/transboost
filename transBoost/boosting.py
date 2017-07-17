@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created in mars 2017 based on a Sema Akkoyunlu file from 2015
+Created in may 2017 based on a Sema Akkoyunlu file from 2015
 
 @author: Raphaël Olivier
 """
+from __future__ import print_function
 from __future__ import division
 import numpy as np
 from tools.data import *
@@ -40,12 +41,11 @@ def boosting(X, y, hs, K, projFinder):
     projFinder.init(X,y,hs) # On initialise projFinder avec les données d'entraînement et l'hypothèse source
     for k in xrange(K): # à chaque étape
         begin=time.time()
-        print 'Boosting : etape',k
+        print('Boosting : etape',k)
         y_pred,err = projFinder.search(D) # On cherche un projecteur (paramètres de recherches dépendent de projFinder)
-        #print cont_min,conts
         end=time.time()
         if(err==None): # Si aucun projecteur satisfaisant n'est trouvé, on s'arrête là.
-            print "Aucun continuateur performant : interruption du boosting après "+str(k)+" étapes"
+            print("Aucun continuateur performant : interruption du boosting après "+str(k)+" étapes")
             break
         if err==0: # Si un projecteur sans erreur est trouvé, on ne garde que lui et on interrompt le boosting
             projFinder.keepLast()
