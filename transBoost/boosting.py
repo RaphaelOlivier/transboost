@@ -61,108 +61,99 @@ def boosting(X, y, hs, K, projFinder):
     return projs, e, a, t
 
 
-def computeWeights(D, y, y_pred, err_min):
-    """ Actualise le poids des exemples pour chaque itération du boosting
+def computeWeights(D, y, y_pred, err):
+    """ Update weights of examples after each boosting step
 
-    Paramètres
+    Parameters
     --------
-    y [n_exemples]
-    y_pred [n_exemples]
-    D [n_exemples] poids assigné aux exemples
+    y [n_examples] (correct labels)
+    y_pred [n_examples] (predicted labels)
+    D [n_examples] weights assigned to each example
 
-    Retourne
+    Returns
     -------
-    D [n_exemples] poids actualisé
+    D [n_examples] updated weights
 
     """
-    #Produit des classes attendues et prédites, si le produit est > 0 alors
-    #la prédiction est bonne sinon non. On surpondère les mauvaises prédictions pour l'étape suivante
-    T = y*y_pred
-    rightCoeff=0.5/(1-err_min)
-    wrongCoeff=0.5/err_min
+    rightCoeff=0.5/(1-err) #Factor by which we multiply the weights of correct examples
+    wrongCoeff=0.5/err #Factor by which we multiply the weights of wrong examples
+    T = y*y_pred #Product of expected and predicted class
     for i in range(len(T)):
-        if T[i] == 1: #La prédiction est bonne
+        if T[i] == 1: #Prediction is correct
             D[i] = rightCoeff*D[i]
-        else:
+        else: #Prediction is wrong
             D[i] = wrongCoeff*D[i]
-    #La somme des coefficients n'a pas changé (1)
+    #The sum remains the same
     return D
 
-def weightedError(y, y_predit, D=None):
-    """ Le taux d'erreur est la somme pondérée des exemples mal 
-    classés.
+def weightedError(y, y_pred, D=None):
+    """ Error rate is the weighted sum of wrongly predicted examples
     
-    Si la prédiction est bonne, le produit terme à terme des deux listes 
-    est positif sinon il est négatif.
-    
-    Paramètres
+    Parameters
     -------
-    y : [n_exemples] 
-    y_predit : [n_exemples] classes prédites par le classifieur
-    D : [n_exemples] poids attribués aux exemples
+    y : [n_examples] (correct labels)
+    y_pred : [n_examples] (predcted labels)
+    D : [n_exemples] (weights given to each example)
     
-    Retourne 
+    Returns 
     -------
-    err : float 
-        Erreur de classification
+    err : float (classification error)
     """
-    if D==None:
+    if D==None: #If no weights we just use uniform distribution
         N = len(y)
         D = np.array(np.ones(N)/N)
     err = .0
-    p = y * y_predit
+    p = y * y_pred #Product of expected and predicted classes
     for i in range(len(p)):
-        if p[i] == -1.: #Le produit est négatif si la prédiction est mauvaise
+        if p[i] == -1.: #Negative product means wrong class
             err += D[i]
     return err
 
 def testhyp(h,X,y,D=None):
     """
-    Applique l'hypothèse et calcule l'erreur pondérée
+    Apply the given hypothesis and computes the weighted error
     
-    Paramètres
+    Parameters
     -------
-    h : [n_exemples][l_features] -> [n_exemples]
-    X : [n_exemples][l_features]
-    y : [n_exemples] 
-    D : [n_exemples] poids assigné aux exemples
+    h : [n_examples][l_features] -> [n_examples]
+    X : [n_examples][l_features] (points to classify)
+    y : [n_examples] (correct labels)
+    D : [n_examples] (weights given to each example)
     
-    Retourne 
+    Returns 
     -------
-    yp : [n_exemples] prédiction
-    err : float 
-        Erreur de classification
-    
+    yp : [n_examples] (prediction)
+    err : float (classification error)    
     """
-    yp=h(X)
+    yp=h(X) #Prediction
     
-    err=weightedError(y,yp,D)
+    err=weightedError(y,yp,D) #Error
     return yp,err
     
     
 def test(X, y, hs, projs, alphas):
-    """ Testing de projecteurs : Pour chaque projecteur on projette les données et on applique l'hypothèse h.
-    On fait ensuite la somme pondérée des labels pour obtenir la prédiction finale.
+    """ Testing our projections : For each of them we project the examples and apply the source hypothesis.
+    Final projection is given by the sign of the weighted sum of partial predictions.
 
-    Paramètres
+    Parameters
     -------
-    X : [n_exemples][l1_features]
-    y : [n_exemples] 
-    hs : [n_exemples][l2_features] -> [n_exemples]
-    projs : Projections, classe contenant les projecteurs [l1_features] -> [l2_features]
-    alphas : [n_projecteurs]
+    X : [n_examples][l1_features] (target examples)
+    y : [n_examples] (labels)
+    hs : [n_examples][l2_features] -> [n_examples] (source hypothesis)
+    projs : Projections (class containing n_projs projections of type [l1_features] -> [l2_features])
+    alphas : [n_projs]
 
-    Retourne
+    Returns
     -------
     err : int
-    y_pred : [n_exemples]
+    y_pred : [n_examples]
     """
-    y_proj = projs.labelsList(X,hs) #liste des prédictions, pour chaque projecteur et l'hypothèse source h
+    y_proj = projs.labelsList(X,hs) #Returns the list of partial predictions for each projection and for the source hypothesis
     errprojs=[]
-    y_pred = np.zeros(len(y))
+    y_pred = np.zeros(len(y)) #Initializing the sum
     for i in range(len(alphas)):
-        errprojs.append(weightedError(y, y_proj[i]))
-        y_pred = y_pred+alphas[i]*y_proj[i]
-    y_pred=np.sign(y_pred) #prédiction finale
-    err=weightedError(y_pred,y)
+        errprojs.append(weightedError(y, y_proj[i])) #Appends the partial error
+        y_pred = y_pred+alphas[i]*y_proj[i] #Adding the weighted prediction
+    y_pred=np.sign(y_pred) #Final prediction
+    err=weightedError(y_pred,y) #Final error
     return err,y_pred, errprojs
