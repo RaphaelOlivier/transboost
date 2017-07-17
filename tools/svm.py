@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 from sklearn import svm, cross_validation
 import numpy as np
 import pdb
-from display import *
 def learnSVM(X, y, gamma,logFile=None):
     """Apprentissage SVM avec validation croisée (10-fold)
     Le noyau utilisé est le noyau gaussien.

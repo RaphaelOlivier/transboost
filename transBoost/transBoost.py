@@ -8,7 +8,7 @@ Class to encapsulate transBoost and save results.
 """
 
 from os import mkdir
-from display import *
+from tools.display import *
 import boosting
 class TransBoost:
     def __init__(self):
@@ -20,7 +20,6 @@ class TransBoost:
         self.log = []
         self.projections = None
         self.alphas = None
-        
     def setProjFinder(self,p):
         self.projFinder=p
     def setSourceHyp(self,h):
@@ -91,7 +90,6 @@ class TransBoost:
         else:
             for i in range(len(self.log)):
                 displayDict(title="step number "+str(i),dic=self.log[i],logFile=logFile)
-        
 
     def printState(self):
         dic=self.log[-1]

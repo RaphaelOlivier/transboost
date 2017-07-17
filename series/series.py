@@ -9,9 +9,9 @@ Created in mars 2017
 """
 
 import numpy as np
-import svm
+import tools.svm as svm
 from scipy.optimize import leastsq
-import data
+import tools.data as data
 
 def polyline(x,param):
     L = param[0]

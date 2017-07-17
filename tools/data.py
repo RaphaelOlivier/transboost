@@ -10,7 +10,6 @@ Files and datasets manipulation
 import random
 import numpy as np
 import csv
-from display import *
 import os
 
 def genere_dataset(N, L, sinFreq=np.arange(5, 15, 0.25), sinRange=np.arange(1,10), sinPhase=np.arange(0, 2*np.pi, np.pi/4), maxSlope=1./300, gaussianDeviation=np.linspace(0.01, 0.05, 5)):

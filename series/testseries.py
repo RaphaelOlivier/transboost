@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
-import data
-import boosting
+import tools.data as data
+import transBoost.boosting as boosting
+import transBoost.transBoost as transBoost
+import transBoost.projections as projections
 import series
-import transBoost
-import projections
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt 
 from sklearn import svm
 def testseries(L_list, l_list, K_list, ds_list, resultsFile=None,n=10):
     cols=["full length", "cut length", "boosting steps", "dataset", "reference train score","reference test score", "transBoost train score", "transBoost test score"]

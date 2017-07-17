@@ -25,16 +25,26 @@ class ProjFinder:
         self.projections=Projections()
         self.lastscore=None #Dernière erreur en date (utile s'il faut cesser le boosting)
         self.timelimit=timelimit #temps maximal "caractérisque" au-delà duquel on interrompt la recherche (l'utilisation dépend du mode)
-        
+        self.graph=None
     def addFunction(self,func, params): #ajouter un couple (fonction, paramètres) à l'ensemble d'exploration
-        self.projfunctions[func]=params    
-    def init(self,X,y,hs): #Renseigner les données d'entraînement et l'hypothèse source, initialise les projecteurs
+        self.projfunctions[func]=params
+    
+    
+    
+    def init(self,X,y,hs,**kwargs): #Renseigner les données d'entraînement et l'hypothèse source, initialise les projecteurs
         self.X=X
         self.y=y
         self.hs=hs
         self.projections=Projections()
         self.lastscore=None
-    
+        if(self.mode=="neural"):
+           self. setGraph(**kwargs)
+        
+    def setGraph(**kwargs):
+        if not isNN(hs):
+            raise Exception("Source hypothesis should be a tensorflow graph with those parameters")
+        self.graph=tf.Graph()
+        
     def search(self,D):
         """
         Recherche d'un projecteur. Selon le mode, distribue la recherche à une fonction précise.
@@ -55,6 +65,9 @@ class ProjFinder:
             return self.stupidsearch(D)
         if(self.mode=="random"):
             return self.randomsearch(D)
+        
+        if(self.mode=="neural"):
+            return self.neuralsearch(D)
         
     def keepLast(self): #ne conserve que le dernier projecteur trouvé. Utile si ce projecteur a une erreur nulle.
         self.projections.keepLast()

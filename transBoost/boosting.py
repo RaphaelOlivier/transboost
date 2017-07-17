@@ -6,11 +6,10 @@ Created in mars 2017 based on a Sema Akkoyunlu file from 2015
 """
 from __future__ import division
 import numpy as np
-from data import *
+from tools.data import *
 from operator import itemgetter
 import collections
 import time
-from display import *
 import matplotlib.pyplot as plt
 def boosting(X, y, hs, K, projFinder):
     """ Calcule à chaque étape du boosting les coefficients actualisés d'Adaboost. La recherche du projecteur est encapsulée dans ProjFinder.search()
