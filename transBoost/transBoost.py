@@ -16,17 +16,12 @@ class TransBoost:
     def __init__(self):
         self.X_train, self.y_train, self.X_test, self.y_test = None,None,None,None
         self.K = 5
-        self.hs=None
-        self.ht=None
         self.projFinder = None
         self.log = []
         self.projections = None
         self.alphas = None
     def setProjFinder(self,p):
         self.projFinder=p
-    def setSourceHyp(self,h):
-        self.hs=h
-    
     def setNumberSteps(self,n):
         self.K=n
     def getNumberSteps(self):
@@ -44,19 +39,19 @@ class TransBoost:
         return self.X,self.y
 
     def checkparamslearning(self):
-        if(self.X_train==None or self.y_train==None or self.hs==None or self.K==None or self.projFinder==None):
+        if(self.X_train==None or self.y_train==None or self.K==None or self.projFinder==None):
             print("param error")
             raise
     
     def checkparamstesting(self):
-        if(self.X_test==None or self.y_test==None or self.hs==None or self.projections==None or self.alphas==None):
+        if(self.X_test==None or self.y_test==None or self.projections==None or self.alphas==None):
             print("param error")
             raise
     
     def learn(self):
 
         self.checkparamslearning()
-        projections, adaboosterrors, alphas, explotime = boosting.boosting(self.X_train, self.y_train, self.hs, self.K, self.projFinder)
+        projections, adaboosterrors, alphas, explotime = boosting.boosting(self.X_train, self.y_train, self.K, self.projFinder)
         self.projections=projections
         self.alphas=alphas
         log={}
@@ -64,7 +59,7 @@ class TransBoost:
         log["data"] = {}
         log["data"]["adaboosterrors"]=adaboosterrors
         log["data"]["exploration time"]=explotime
-        err, pred, trainerrors = boosting.test(self.X_train, self.y_train, self.hs, self.projections, self.alphas)
+        err, pred, trainerrors = boosting.test(self.X_train, self.y_train, self.projections, self.alphas)
         log["results"]=err
         log["data"]["trainerrors"] = trainerrors
         self.log.append(log)
@@ -72,7 +67,7 @@ class TransBoost:
     
     def run(self):
         self.checkparamstesting()
-        err, pred, testerrors = boosting.test(self.X_test, self.y_test, self.hs, self.projections, self.alphas)
+        err, pred, testerrors = boosting.test(self.X_test, self.y_test, self.projections, self.alphas)
         log={}
         log["step"]="Testing"
         log["data"]={}

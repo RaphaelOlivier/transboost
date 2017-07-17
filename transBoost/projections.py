@@ -7,52 +7,78 @@ Created in may 2017
 Projection research and application
 """
 from __future__ import print_function, absolute_import
-import transBoost.boosting as boosting
 import numpy as np
 import time
 import random
 
+from tools.learning import testhyp
+
 class ProjFinder:
     """
-    Cette classe encapsule la recherche de projecteurs, en fonction de paramètres, de données d'entraînement et d'une hypothèse source.
-    Un projecteur est la donnée d'une fonction et de ses paramètres.
+    Encapsulate projection exploration, given a research mode parameters, training data and source hypothesis.
+    Often, a projection is a function and its parameters. However there are changes depending on the research mode used.
     """
     def __init__(self,mode="stupid", randombar=0.4999, threshold=0.45,timelimit=None):
-        self.mode=mode #mode de recherche
-        self.projfunctions={} #dictionnaire contenant l'ensemble des projecteurs. clés = fonctions, valeurs =collections de paramètres.
-        self.randombar=randombar #limite en dessous de laquelle on estime faire mieux que le hasard (ex : 0.4999)
-        self.threshold=threshold #erreur à partir de laquelle on cesse la recherche (ex : 0.45)
-        self.X=None 
-        self.y=None
-        self.hs=None
-        self.projections=Projections()
-        self.lastscore=None #Dernière erreur en date (utile s'il faut cesser le boosting)
-        self.timelimit=timelimit #temps maximal "caractérisque" au-delà duquel on interrompt la recherche (l'utilisation dépend du mode)
+        """Constructor
+        
+        Parameters
+        -------
+        mode : String (research mode - see the search function)
+        randombar : float (error below it means a projection is better than random choice)
+        threshold : float (With error below it we can stop the research instantly)
+        timelimit : float (Time limit for a single projection exploration - use depends on the mode)
+        """
+        self.mode=mode
+        self.projfunctions={} #Dictionnary containing projection types as keys and parameters as values - used except for neural search
+        self.randombar=randombar
+        self.threshold=threshold
+        self.X=None #Training examples
+        self.y=None #Training labels
+        self.hs=None #Source hypothesis
+        self.projections=Projections() #Class used to contain selected projections
+        self.lastscore=None #Last error found (if zero, we should stop the boosting)
+        self.timelimit=timelimit 
         self.graph=None
-    def addFunction(self,func, params): #ajouter un couple (fonction, paramètres) à l'ensemble d'exploration
+        
+    def setSourceHyp(self,hs):
+        """
+        Sets source hypothesis. Used in any search except neural search (does not exist in python 2.7)
+        """
+        self.hs=hs
+    
+    
+    def addFunction(self,func, params):
+        """
+        Add a couple (function, set of parameters) in the exploration space.
+        Used in stupidsearch and randomsearch.
+        
+        Parameters
+        ---------
+        func : [n_features1],[n_params] -> [n_features2]
+        params [n_possible_parameters][n_sets]
+        """
         self.projfunctions[func]=params
     
-    
-    
-    def init(self,X,y,hs,**kwargs): #Renseigner les données d'entraînement et l'hypothèse source, initialise les projecteurs
+    def init(self,X,y):
+        """
+        Sets training data, initializes projections to empty space
+        
+        Parameters
+        ----------
+        X : [n_examples][n_features1]
+        y : [n_examples]
+        
+        """
         self.X=X
         self.y=y
-        self.hs=hs
-        self.projections=Projections()
+        self.projections=Projections(source_hypothesis=self.hs)
         self.lastscore=None
-        if(self.mode=="neural"):
-           self. setGraph(**kwargs)
-        
-    def setGraph(**kwargs):
-        if not isNN(hs):
-            raise Exception("Source hypothesis should be a tensorflow graph with those parameters")
-        self.graph=tf.Graph()
         
     def search(self,D):
         """
-        Recherche d'un projecteur. Selon le mode, distribue la recherche à une fonction précise.
+        Projection research. Distributes research to a precise function according to the mode
         
-        Paramètres
+        Parameters
         ----------
         D : [n_exemples] poids des exemples.
         
@@ -95,7 +121,7 @@ class ProjFinder:
         for p in self.projfunctions: #pour chaque fonction
             for param in self.projfunctions[p]: #pour chaque paramètre
                 X_p = Projections.proj(self.X, p, param) #on applique le projecteur
-                y_pred, err = boosting.testhyp(self.hs, X_p, self.y, D) #On applique l'hypothèse
+                y_pred, err = testhyp(self.hs, X_p, self.y, D) #On applique l'hypothèse
                 if err < err_min: #Si on a fait mieux que les scores précédents, ce score devient le score minimal et on retient les paramètres
                     err_min = err
                     param_min = param
@@ -137,7 +163,7 @@ class ProjFinder:
                 param = lis.pop(i) #On retire le paramètre correpondant
                 n=n-1 
                 X_p = Projections.proj(self.X, p, param) #On applique le projecteur
-                y_pred, err = boosting.testhyp(self.hs, X_p, self.y, D) #On applique l'hypothèse
+                y_pred, err = testhyp(self.hs, X_p, self.y, D) #On applique l'hypothèse
                 if err < err_min: #Si on a fait mieux que les scores précédents, ce score devient le score minimal et on retient les paramètres
                     err_min = err
                     param_min = param
@@ -158,9 +184,10 @@ class ProjFinder:
         self.projections.printProjections()
         
 class Projections:
-    def __init__(self):
+    def __init__(self,source_hypothesis=None):
         self.projections=[] #Liste de fonctions de projecteurs
         self.params=[] #Liste de paramètres pour ces fonctions
+        self.hs=source_hypothesis
 
     def add(self,p, par): #ajoute un couple fonction/paramètres
         self.projections.append(p)
@@ -187,7 +214,7 @@ class Projections:
         Xp=np.array(lis)
         return Xp
     
-    def labelsList(self,X, hs):
+    def labelsList(self,X):
         """
         Applique les projecteurs sur des données et applique une hypothèse source.
         
@@ -203,7 +230,7 @@ class Projections:
         yl=[]
         for i in range(len(self.projections)):
             X_p = Projections.proj(X, self.projections[i], self.params[i])
-            yl.append(hs(X_p))
+            yl.append(self.hs(X_p))
         return yl
     
     def keepLast(self): #ne conserve que le dernier projecteur trouvé. Utile si ce projecteur a une erreur nulle.

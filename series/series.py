@@ -12,7 +12,7 @@ from __future__ import print_function, absolute_import
 import numpy as np
 from scipy.optimize import leastsq
 
-import tools.svm as svm
+import tools.learning as learning
 import tools.data as data
 
 def polyline(x,param):
@@ -105,7 +105,7 @@ def breaksvmhyp(X,y,b,c):
     for i in range(N):
         X_mod[i,:]=breakline(X[i,:],b,c)
     
-    err,clf = svm.learnSVM(X_mod, y, 0.03)
+    err,clf = learning.learnSVM(X_mod, y, 0.03)
     def hs(X1):
         return clf.predict(X1)
     return hs
@@ -113,7 +113,7 @@ def breaksvmhyp(X,y,b,c):
 
 def svmhyp(X,y):
     
-    err,clf = svm.learnSVM(X, y, 0.03)
+    err,clf = learning.learnSVM(X, y, 0.03)
     def hs(X1):
         return clf.predict(X1)
     return hs

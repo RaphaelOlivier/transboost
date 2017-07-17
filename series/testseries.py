@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from sklearn import svm
 
 import tools.data as data
-import transBoost.boosting as boosting
+from tools.learning import testhyp
 import transBoost.transBoost as transBoost
 import transBoost.projections as projections
 import series.series as series
@@ -39,8 +39,8 @@ def testseries(L_list, l_list, K_list, ds_list, resultsFile=None,n=10):
                         X_train = data.cutSeries(X_train,l)
                         X_test = data.cutSeries(X_test,l)
                         href=series.svmhyp(X_train, y_train)
-                        yp,eTrainRef=boosting.testhyp(href,X_train,y_train)
-                        yp,eTestRef=boosting.testhyp(href,X_test,y_test)
+                        yp,eTrainRef=testhyp(href,X_train,y_train)
+                        yp,eTestRef=testhyp(href,X_test,y_test)
                         
                         eTrain, eTest= singletest(L, l, K, hs, X_train, y_train, X_test, y_test)
                         #eTrain, eTest = svmreg(L, l, hs, X_train, y_train, X_test, y_test)
@@ -87,7 +87,7 @@ def singletest(L, l, K, hs, X_train, y_train, X_test, y_test):
     tb.setProjFinder(pf)
     
     
-    tb.setSourceHyp(hs)
+    pf.setSourceHyp(hs)
     
     tb.setTrainSet(X_train,y_train)
     tb.setTestSet(X_test,y_test)
@@ -110,8 +110,8 @@ def svmreg(L, l, hs, X_train, y_train, X_test, y_test):
             clfr.fit(t[:l], x)
             Z[i,:] = np.append(x,clfr.predict(t[l:]))
         return hs(Z)
-    y,eTrain = boosting.testhyp(hreg,X_train,y_train)
-    y,eTest = boosting.testhyp(hreg,X_test,y_test)
+    y,eTrain = testhyp(hreg,X_train,y_train)
+    y,eTest = testhyp(hreg,X_test,y_test)
     return eTrain, eTest
 
 def simplifyCSV(path):
