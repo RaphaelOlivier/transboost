@@ -7,7 +7,7 @@ Created on Mon Jun 15 10:07:37 2015
 Files and datasets manipulation
 """
 
-from __future__ import print_function
+from __future__ import print_function, absolute_import
 import random
 import numpy as np
 import csv
@@ -119,7 +119,7 @@ def randomSample(X, y,prop=(0.3)):
     for i in range(len(prop)):
         n = min(int(N*prop[i]),len(I))
    
-        i = random.sample(I, n)
+        i = np.random.choice(I, size=n, replace=False)
         l.append(X[i])
         l.append(y[i])
         I = np.delete(I, i)

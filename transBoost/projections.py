@@ -6,8 +6,8 @@ Created in may 2017
 
 Projection research and application
 """
-from __future__ import print_function
-import boosting
+from __future__ import print_function, absolute_import
+import transBoost.boosting as boosting
 import numpy as np
 import time
 import random

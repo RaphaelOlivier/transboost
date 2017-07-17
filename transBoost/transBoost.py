@@ -7,10 +7,10 @@ Created in may 2017
 Class to encapsulate transBoost and save results.
 """
 
-from __future__ import print_function
+from __future__ import print_function, absolute_import
 
 from tools.display import displayDict
-import boosting
+import transBoost.boosting as boosting
 
 class TransBoost:
     def __init__(self):

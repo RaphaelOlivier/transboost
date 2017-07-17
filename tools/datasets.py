@@ -7,12 +7,13 @@ Created in april 2017
 Display functions used to write log files and print things
 """
 
+from __future__ import print_function, absolute_import
 import random
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
 
-from data import *
+import tools.data as data
 
 """
 sinFreq=np.arrange(5, 15, 0.25)
@@ -54,8 +55,8 @@ r2=np.arange(1,10)
 p=np.arange(0, 2*np.pi, np.pi/8)
 for i in range(5):
     for j in range(5):
-        X,y=genere_dataset(3000, 200, sinFreq=f2,sinRange=r2,sinPhase=p,maxSlope=sl[j],gaussianDeviation=D[i])
-        exportCSV(X,y,"DATASET/capDataset_dev"+str(D[i][0])+"_slp"+str(sl[j])+".txt",delimiter='\t')
+        X,y=data.genere_dataset(3000, 200, sinFreq=f2,sinRange=r2,sinPhase=p,maxSlope=sl[j],gaussianDeviation=D[i])
+        data.exportCSV(X,y,"DATASET/capDataset_dev"+str(D[i][0])+"_slp"+str(sl[j])+".txt",delimiter='\t')
 """
 for i in range(4):
     for j in range(4):

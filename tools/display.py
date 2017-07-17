@@ -7,7 +7,7 @@ Created in april 2017
 Display functions used to write log files and print things
 """
 
-from __future__ import print_function
+from __future__ import print_function, absolute_import
 
 def display(*args):
     logFile=args[0]

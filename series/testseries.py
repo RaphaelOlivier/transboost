@@ -6,7 +6,7 @@ Created in may 2017
 
 test function for TransBoost with time series
 """
-from __future__ import print_function
+from __future__ import print_function, absolute_import
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt 
@@ -16,7 +16,7 @@ import tools.data as data
 import transBoost.boosting as boosting
 import transBoost.transBoost as transBoost
 import transBoost.projections as projections
-import series
+import series.series as series
 
 def testseries(L_list, l_list, K_list, ds_list, resultsFile=None,n=10):
     cols=["full length", "cut length", "boosting steps", "dataset", "reference train score","reference test score", "transBoost train score", "transBoost test score"]
@@ -78,12 +78,11 @@ def singletest(L, l, K, hs, X_train, y_train, X_test, y_test):
     
     pf = projections.ProjFinder(mode="random",timelimit=20)
     
-#    f = series.polyline
-#    param= series.polyline_param(L,l)
-    f=series.line
-    param=series.line_param(L,l)
-    
-    
+    f = series.polyline
+    param= series.polyline_param(L,l)
+#    f=series.line
+#    param=series.line_param(L,l)
+     
     pf.addFunction(f, param)
     tb.setProjFinder(pf)
     

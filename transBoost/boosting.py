@@ -5,8 +5,7 @@
 
 boosting core functions and a few auxiliary functions
 """
-from __future__ import print_function
-from __future__ import division
+from __future__ import print_function, absolute_import, division
 import numpy as np
 import time
 
@@ -39,7 +38,7 @@ def boosting(X, y, hs, K, projFinder):
     t = []
     e = []
     projFinder.init(X,y,hs) # On initialise projFinder avec les données d'entraînement et l'hypothèse source
-    for k in xrange(K): # à chaque étape
+    for k in range(K): # à chaque étape
         begin=time.time()
         print('Boosting : etape',k)
         y_pred,err = projFinder.search(D) # On cherche un projecteur (paramètres de recherches dépendent de projFinder)

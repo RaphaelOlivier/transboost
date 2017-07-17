@@ -8,7 +8,7 @@ Created in may 2017
 #material for using TransBoost with time series : hypothesis and projection functions
 """
 
-from __future__ import print_function
+from __future__ import print_function, absolute_import
 import numpy as np
 from scipy.optimize import leastsq
 
@@ -44,10 +44,10 @@ def polyline(x,param):
 def polyline_param(L,l):
     lis=[]
     coeff = np.arange(0,10,0.5)
-    breakpoint=np.arange(L-10,10,-10)
-    deb = np.arange(0,l-10,10)
+    breakpoint=np.arange(L-10,10,-10, dtype=np.int16)
+    deb = np.arange(0,l-10,10, dtype=np.int16)
     for d in deb:
-        fin=np.arange(d+5,l,10)
+        fin=np.arange(d+5,l,10, dtype=np.int16)
         for f in fin:
             for b in breakpoint:
                 for c in coeff:
@@ -75,9 +75,9 @@ def line_param(L,l):
     lis=[]
     alpha = np.arange(-np.pi/2, np.pi/2, np.pi/16)
     pace=l/5
-    deb = np.arange(0,l-pace,pace)
+    deb = np.arange(0,l-pace,pace, dtype=np.int16)
     for d in deb:
-        fin=np.arange(d+pace,l,pace)
+        fin=np.arange(d+pace,l,pace, dtype=np.int16)
         for f in fin:
             for a in alpha:
                 lis.append((L, d, f, a))
