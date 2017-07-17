@@ -10,8 +10,9 @@ Created in may 2017
 
 from __future__ import print_function
 import numpy as np
-import tools.svm as svm
 from scipy.optimize import leastsq
+
+import tools.svm as svm
 import tools.data as data
 
 def polyline(x,param):

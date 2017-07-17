@@ -8,8 +8,8 @@ Class to encapsulate transBoost and save results.
 """
 
 from __future__ import print_function
-from os import mkdir
-from tools.display import *
+
+from tools.display import displayDict
 import boosting
 
 class TransBoost:

@@ -1,14 +1,23 @@
 # -*- coding: utf-8 -*-
+"""
+Created in may 2017 
+
+@author: Raphaël Olivier
+
+test function for TransBoost with time series
+"""
 from __future__ import print_function
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt 
+from sklearn import svm
+
 import tools.data as data
 import transBoost.boosting as boosting
 import transBoost.transBoost as transBoost
 import transBoost.projections as projections
 import series
-import matplotlib.pyplot as plt 
-from sklearn import svm
+
 def testseries(L_list, l_list, K_list, ds_list, resultsFile=None,n=10):
     cols=["full length", "cut length", "boosting steps", "dataset", "reference train score","reference test score", "transBoost train score", "transBoost test score"]
     

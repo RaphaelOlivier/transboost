@@ -2,15 +2,13 @@
 """
 Created on Thu Jun 04 14:15:29 2015
 
-@author: Sema Akkoyunlu
-
-Des fonctions concernant l'apprentissage avec svm, utilisées pour construire des hypothèses sources
+@author: Sema Akkoyunlu, Raphaël Olivier
+SVM learning and testing : useful functions to build hypothesis
 """
 
-import matplotlib.pyplot as plt
 from sklearn import svm, cross_validation
 import numpy as np
-import pdb
+
 def learnSVM(X, y, gamma,logFile=None):
     """Apprentissage SVM avec validation croisée (10-fold)
     Le noyau utilisé est le noyau gaussien.
@@ -48,12 +46,6 @@ def learnSVR(clf, X, y, L, gamma=0.03,logFile=None):
         clfr.fit(t[:l], x)
         Z[i,:] = np.append(x,clfr.predict(t[l:]))
         
-#        if(i<5):
-#            plt.plot(t[:l],X[i,:])
-#            plt.plot(t,clfr.predict(t),'-')
-#    prediction = cross_validation.cross_val_predict(clf, X, y, cv = 10)
-    
-#    plt.show()
     return testSVM(clf,Z,y)
 
 def testSVM(clf, X, y, D = None,logFile=None):

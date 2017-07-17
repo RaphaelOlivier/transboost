@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
+"""
+Created in april 2017 
+
+@author: Raphaël Olivier
+
+Display functions used to write log files and print things
+"""
+
 import random
 import numpy as np
-
 import matplotlib.pyplot as plt
-from data import *
 import csv
+
+from data import *
 
 """
 sinFreq=np.arrange(5, 15, 0.25)

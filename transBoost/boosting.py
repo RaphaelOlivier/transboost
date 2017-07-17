@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-Created in may 2017 based on a Sema Akkoyunlu file from 2015
 
-@author: Raphaël Olivier
+@author: Sema Akkoyunlu, Raphaël Olivier
+
+boosting core functions and a few auxiliary functions
 """
 from __future__ import print_function
 from __future__ import division
 import numpy as np
-from tools.data import *
-from operator import itemgetter
-import collections
 import time
-import matplotlib.pyplot as plt
+
+from tools.data import *
+
 def boosting(X, y, hs, K, projFinder):
     """ Calcule à chaque étape du boosting les coefficients actualisés d'Adaboost. La recherche du projecteur est encapsulée dans ProjFinder.search()
 
