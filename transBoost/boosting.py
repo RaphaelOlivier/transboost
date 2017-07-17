@@ -3,7 +3,7 @@
 
 @author: Sema Akkoyunlu, Raphaël Olivier
 
-boosting core functions and a few auxiliary functions
+Boosting core functions and a few auxiliary functions
 """
 from __future__ import print_function, absolute_import, division
 import numpy as np
@@ -12,55 +12,52 @@ import time
 from tools.data import *
 
 def boosting(X, y, hs, K, projFinder):
-    """ Calcule à chaque étape du boosting les coefficients actualisés d'Adaboost. La recherche du projecteur est encapsulée dans ProjFinder.search()
+    """ Computes for each boosting step Adaboost weights. The projection reasearch part is encapsulated in ProjFinder.search()
 
-    Paramètres
+    Parameters
     --------
-    X : [n_exemples][l1_features]
-    y : [n_exemples]
-    hs : [n_exemples][l2_features] -> [n_exemples]
-    K : int
-        Nombre d'itération pour le boosting
-    projFinder : ProjFinder
-        Classe de recherche des projecteurs de type [l1_features] -> [l2_features]
+    X : [n_examples][l1_features] (target examples)
+    y : [n_examples] (labels)
+    hs : [n_examples][l2_features] -> [n_exemples] (source hypothesis)
+    K : int (number of boosting steps)
+    projFinder : ProjFinder (projections research class [l1_features] -> [l2_features])
 
-    Retourne
+    Returns
     -------
-    projs : Projections() classe contenant les projecteurs [l1_features] -> [l2_features]
-        les projecteurs retenus par le boosting.
-    e : liste ordonnée des erreurs des projecteurs
-    a : liste ordonnée des coefficients à attribuer au score de chaque projecteur
-    t : temps d'exploration requis pour trouver chaque projecteur
+    projs : Projections() (class containing projections of type [l1_features] -> [l2_features] that Adaboost retained)
+    e : [n_projs] (ordered list of projection errors) n_projs=K or n_projs<K
+    a : [n_projs] (ordered list of factors given to each projection)
+    t : [n_projs] (exploration time required to find each projection)
     """
-    N = X.shape[0] # nombre d'exemples
-    D = np.array(np.ones(N)/N) # Poids des exemples initialisés à 1/N
+    N = X.shape[0] # Number of examples
+    D = np.array(np.ones(N)/N) # Weights of each example, initially 1/N
     a = []
     t = []
     e = []
-    projFinder.init(X,y,hs) # On initialise projFinder avec les données d'entraînement et l'hypothèse source
-    for k in range(K): # à chaque étape
+    projFinder.init(X,y,hs) # ProjFinder is initialised with training data and source hypothesis
+    for k in range(K): # At each step
         begin=time.time()
         print('Boosting : etape',k)
-        y_pred,err = projFinder.search(D) # On cherche un projecteur (paramètres de recherches dépendent de projFinder)
+        y_pred,err = projFinder.search(D) # Looking for a projection (How we look for it depends on ProjFinder)
         end=time.time()
-        if(err==None): # Si aucun projecteur satisfaisant n'est trouvé, on s'arrête là.
+        if(err==None): # If we found none, we stop here
             print("Aucun continuateur performant : interruption du boosting après "+str(k)+" étapes")
             break
-        if err==0: # Si un projecteur sans erreur est trouvé, on ne garde que lui et on interrompt le boosting
+        if err==0: # If we found a perfect projector, we keep it and stop here
             projFinder.keepLast()
-            a=[1] # un seul coefficient
-            e.append(0) #erreur nulle
-            t.append(end-begin) #temps d'exploration
+            a=[1] # One coefficient
+            e.append(0) #Null error
+            t.append(end-begin) #Exploration time
             break
-        alpha = 0.5*np.log((1-err)/err) # Cas général : on calcule le coefficient à attribuer au projecteur
+        alpha = 0.5*np.log((1-err)/err) # Usual case : we compute the coefficient to give to this projection
 
-        D = computeWeights(D, y, y_pred, err) # On réactualise le poids de chaque exemple
+        D = computeWeights(D, y, y_pred, err) # Update example weights
         
         a.append(alpha)
         t.append(end-begin)
         e.append(err)
         
-    projs = projFinder.getProjections() # Fin du boosting : on récupère les projecteurs dans une classe Projection.
+    projs = projFinder.getProjections() # End of boosting : we get projections in a projection class.
     return projs, e, a, t
 
 
