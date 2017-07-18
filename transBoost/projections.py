@@ -25,7 +25,8 @@ class ProjFinder:
         -------
         mode : String (research mode - see the search function)
         randombar : float (error below it means a projection is better than random choice)
-        threshold : float (With error below it we can stop the research instantly)
+        threshold : float (With error below it we can stop the research instantly. We usually don't require that a selected projection is better ; 
+                           but if we found one better, it is good enough.)
         timelimit : float (Time limit for a single projection exploration - use depends on the mode)
         """
         self.mode=mode
@@ -42,7 +43,11 @@ class ProjFinder:
         
     def setSourceHyp(self,hs):
         """
-        Sets source hypothesis. Used in any search except neural search (does not exist in python 2.7)
+        Sets source hypothesis. Used in any search except neural search (which does not exist in python 2.7)
+        
+        Parameters
+        ----------
+        hs : [n_examples][l_features] -> [n_examples]
         """
         self.hs=hs
     
@@ -55,11 +60,11 @@ class ProjFinder:
         Parameters
         ---------
         func : [n_features1],[n_params] -> [n_features2]
-        params [n_possible_parameters][n_sets]
+        params [n_parameters_sets][n_params]
         """
         self.projfunctions[func]=params
     
-    def init(self,X,y):
+    def init(self,mode=None,X,y):
         """
         Sets training data, initializes projections to empty space
         
@@ -69,10 +74,19 @@ class ProjFinder:
         y : [n_examples]
         
         """
+        if(mode!=None):
+            self.mode=mode
         self.X=X
         self.y=y
-        self.projections=Projections(source_hypothesis=self.hs)
         self.lastscore=None
+        
+        if(self.mode=="stupid" or self.mode=="random"):
+            self.projections=Projections(source_hypothesis=self.hs)
+        else :
+            if(self.mode=="neural"):
+                raise Exception("Neural search is not allowed in python 2")
+            else:
+                raise Exception("Unknown search mode :"+str(self.mode))
         
     def search(self,D):
         """
@@ -80,14 +94,14 @@ class ProjFinder:
         
         Parameters
         ----------
-        D : [n_exemples] poids des exemples.
+        D : [n_examples] (weights of the examples)
         
-        Retourne
+        Returns
         --------
-        y_pred : [n_exemples] prédiction pour le projecteur retenu
-        err : int, erreur pour le projecteur retenu
+        y_pred : [n_examples] (predicted labels related to the selected projection)
+        err : float (error rate of the selected projection)
         """
-        if(self.lastscore!=None and self.lastscore>=self.randombar): #Si le dernier trouvé n'était pas meilleur que le hasard, on indique que la recherche est terminée.
+        if(self.lastscore!=None and self.lastscore>=self.randombar): #If we did not find better than random last time, it is useless to keep searching.
             
             return None,None
         if(self.mode=="stupid"):
@@ -98,146 +112,156 @@ class ProjFinder:
         if(self.mode=="neural"):
             return self.neuralsearch(D)
         
-    def keepLast(self): #ne conserve que le dernier projecteur trouvé. Utile si ce projecteur a une erreur nulle.
+    def keepLast(self): #Keeps only the last projection found. Useful if this projection has a null error
         self.projections.keepLast()
         
     def stupidsearch(self,D):
         """
-        Recherche "exhaustive" d'un projecteur. On explore dans l'ordre tous les projecteurs jusqu'à ce que l'un fasse mieux que la threshold ou qu'il n'y en ait plus.
+        Exhaustive projection search. Explores the ordered set of projections until one has weighted error lower than self.threshold.
         
-        Paramètres
+        Parameters
         ----------
-        D : [n_exemples] poids des exemples.
+        D : [n_examples] (Weights of the examples)
         
-        Retourne
+        Returns
         --------
-        y_pred_min : [n_exemples] prédiction pour le projecteur retenu
-        err_min : int, erreur pour le projecteur retenu
+        y_pred_min : [n_examples] predicted labels related to the selected projection
+        err_min : float (error rate of the selected projection)
         """
-        err_min=2 #initialisée à une valeur max
+        err_min=2 #Initializaion
         param_min=None
         p_min=None
         y_pred_min=None
-        for p in self.projfunctions: #pour chaque fonction
-            for param in self.projfunctions[p]: #pour chaque paramètre
-                X_p = Projections.proj(self.X, p, param) #on applique le projecteur
-                y_pred, err = testhyp(self.hs, X_p, self.y, D) #On applique l'hypothèse
-                if err < err_min: #Si on a fait mieux que les scores précédents, ce score devient le score minimal et on retient les paramètres
+        for p in self.projfunctions: #For each function
+            for param in self.projfunctions[p]: #For each parameters set
+                X_p = self.projections.proj(self.X, p, param) #Apply the projection
+                y_pred, err = testhyp(self.hs, X_p, self.y, D) #Apply the source hypothesis
+                if err < err_min: #If bette than previously, this error rate becomes the best rate and e keep the related parameters in memory
                     err_min = err
                     param_min = param
                     y_pred_min = y_pred
                     p_min = p
-#                if err_min < self.threshold: # Si on a fait mieux que threshold, on cesse la recherche
-#                    break
-#            if err_min < self.threshold: #On cesse ausi la recherche des fonctions
-#                break
-        self.projections.add(p_min,param_min) #On retient le meilleur projecteur
-        self.lastscore=err_min #On retient le score
+                if err_min < self.threshold: #If we did better than self.threshold, we stop searching parameters
+                    break
+            if err_min < self.threshold: #We also stop searching other functions
+                break
+        self.projections.add(p_min,param_min) #We add the selected projection to the projection set
+        self.lastscore=err_min #Update the last score
         return y_pred_min, err_min
     
     def randomsearch(self,D):
         """
-        Recherche "aléatoire" d'un projecteur. On explore aléatoirement tous les projecteurs jusqu'à ce que l'un fasse mieux que la threshold, qu'o n'y en ait plus ou qu'on ait dépassé la limite de temps (pour une fonction donnée)
-        La recherche aléatoire permet de s'approcher plus rapidement du score du meilleur projecteur. Avec timelimit assez élevé, la différence sera faible avec une grande probabilité.
+        Random projection search. We randomly explore the projection set until one gets better than self.threshold, or there is no more, or (in the search of parameters related to one function) we passed the time limit.
+        Random search allow to improve the best error rate faster, with the drawback of non-exhaustive search and possibly missing some good projections. However with self.timelimit high enough the difference between exhaustive search results and random search results is likely to be very small.
         
-        Paramètres
+        Parameters
         ----------
-        D : [n_exemples] poids des exemples.
+        D : [n_examples] (Weights of the examples)
         
-        Retourne
+        Returns
         --------
-        y_pred_min : [n_exemples] prédiction pour le projecteur retenu
-        err_min : int, erreur pour le projecteur retenu
+        y_pred_min : [n_examples] predicted labels related to the selected projection
+        err_min : float (error rate of the selected projection)
         """
         
-        err_min=2 #initialisée à une valeur max
+        err_min=2 #Initializaion
         param_min=None
         p_min=None
         y_pred_min=None
-        for p in self.projfunctions: #pour chaque fonction
-            begin = time.time()
-            lis=self.projfunctions[p][:] #copie de la liste des paramètres
-            n = len(lis)
-            while(n>0 and time.time()-begin < self.timelimit): #Tant qu'on n'a pas dépassé timelimit et qu'il reste des paramètres
-                i = random.randint(0,n-1) # Un indice est pris au hasard
-                param = lis.pop(i) #On retire le paramètre correpondant
-                n=n-1 
-                X_p = Projections.proj(self.X, p, param) #On applique le projecteur
-                y_pred, err = testhyp(self.hs, X_p, self.y, D) #On applique l'hypothèse
-                if err < err_min: #Si on a fait mieux que les scores précédents, ce score devient le score minimal et on retient les paramètres
+        for p in self.projfunctions: #For each function
+            begin = time.time() #Time at the beginning of the search
+            n = len(self.projfunctions[p]) #number of parameters sets
+            inds = np.arange(n) #indices of parameters sets to explore
+            mask = np.ones(n,dtype=bool) #Will be used not to select several times one parameters set
+            while(n>0 and time.time()-begin < self.timelimit): #While there are still parameters and timelimit is not exceeded
+                i = random.choice(inds[mask]) # One new index is randomly chosen
+                mask[i]=False #It wont be chosen again
+                param = self.projfunctions[p][i] #Select the corresponding parameters set
+                n=n-1 #Decrease the counter
+                X_p = Projections.proj(self.X, p, param) #Apply the projection
+                y_pred, err = testhyp(self.hs, X_p, self.y, D) #Apply the source hypothesis
+                if err < err_min: #If bette than previously, this error rate becomes the best rate and keep the related parameters in memory
                     err_min = err
                     param_min = param
                     y_pred_min = y_pred
                     p_min = p
-                if err_min < self.threshold: # Si on a fait mieux que threshold, on cesse la recherche
+                if err_min < self.threshold: #If we did better than self.threshold, we stop searching parameters
                     break
-            if err_min < self.threshold: #On cesse ausi la recherche des fonctions
+            if err_min < self.threshold: #We also stop searching other functions
                 break
-        self.projections.add(p_min,param_min) #On retient le meilleur projecteur trouvé
-        self.lastscore=err_min #On retient le score
+        self.projections.add(p_min,param_min) #We add the selected projection to the selected projection set
+        self.lastscore=err_min #Update the last score
         return y_pred_min, err_min
     
-    def getProjections(self): #Retourne un objet Projections qui encapsule une liste de projecteurs
+    def getProjections(self): #Returns an object encapsulating the selected projection set
         return self.projections
     
-    def printProjections(self): #affiche les projecteurs
+    def printProjections(self): #Print projections
         self.projections.printProjections()
         
 class Projections:
+    """The projections set class for stupid and random modes.
+        Not used in neural mode (which is not allowed in python2.7)
+        """
     def __init__(self,source_hypothesis=None):
-        self.projections=[] #Liste de fonctions de projecteurs
-        self.params=[] #Liste de paramètres pour ces fonctions
+        """
+        Constructor
+        
+        Parameters
+        ---------
+        source_hypothesis : [n_examples][l_features] -> [n_examples]
+        """
+        self.projections=[] #Functions list
+        self.params=[] #Parameters list
         self.hs=source_hypothesis
 
-    def add(self,p, par): #ajoute un couple fonction/paramètres
+    def add(self,p, par): #Adds a new parameter (~function+parameters) to the list
         self.projections.append(p)
         self.params.append(par)
     
-    @staticmethod
-    def proj(X,p,param):
+    def proj(self,X,p,param):
         """
-        Fonction statique : applique un projecteur sur des données.
+        Apply a given projection to given target data
         
-        Paramètres
+        Parameters
         ----------
-        X : [n_exemples][l1_features]
-        p : [l1_features], params -> [l2_features]
-        param : paramètres (le type dépend de la fonction)
+        X : [n_examples][l1_features]
+        p : [l1_features], [n_params] -> [l2_features]
+        param : [n_params]
         
-        Retourne
+        Returns
         --------
-        Xp : [n_exemples][l2_features]
+        Xp : [n_examples][l2_features]
         """
         lis=[]
-        for i in range(X.shape[0]): #pour chaque exemple
-            lis.append(p(X[i,:],param)) #on applique le projecteur
+        for i in range(X.shape[0]): #For each example
+            lis.append(p(X[i,:],param)) #Apply the projection
         Xp=np.array(lis)
         return Xp
     
     def labelsList(self,X):
         """
-        Applique les projecteurs sur des données et applique une hypothèse source.
+        Apply the projection list on given data, then apply the source hypothesis
         
-        Paramètres
+        Parameters
         ----------
-        X : [n_exemples][l1_features]
-        hs : [n_exemples][l2_features] -> [n_exemples]
+        X : [n_examples][l1_features]
         
-        Retourne
+        Returns
         --------
-        yl : [n_projecteurs][n_exemples]
+        yl : [n_projs][n_examples]
         """
         yl=[]
         for i in range(len(self.projections)):
-            X_p = Projections.proj(X, self.projections[i], self.params[i])
+            X_p = self.proj(X, self.projections[i], self.params[i])
             yl.append(self.hs(X_p))
         return yl
     
-    def keepLast(self): #ne conserve que le dernier projecteur trouvé. Utile si ce projecteur a une erreur nulle.
+    def keepLast(self): #Keeps only the last projection found. Useful if this projection has a null error
         self.projections=self.projections[-1:]
         self.params=self.params[-1:]
         
-    def printProjections(self): #affiche les projecteurs
+    def printProjections(self): #Prints the projection list
         print("Projections :")
         for i in range(len(self.projections)):
             print(str(self.projections[i].__name__), str(self.params[i]))
