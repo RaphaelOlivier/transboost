@@ -64,7 +64,7 @@ class ProjFinder:
         """
         self.projfunctions[func]=params
     
-    def init(self,mode=None,X,y):
+    def init(self,X,y,mode=None):
         """
         Sets training data, initializes projections to empty space
         
@@ -84,9 +84,11 @@ class ProjFinder:
             self.projections=Projections(source_hypothesis=self.hs)
         else :
             if(self.mode=="neural"):
-                raise Exception("Neural search is not allowed in python 2")
+                print("Neural search is not allowed in python 2")
+                raise
             else:
-                raise Exception("Unknown search mode :"+str(self.mode))
+                print("Unknown search mode :"+str(self.mode))
+                raise
         
     def search(self,D):
         """
@@ -178,7 +180,7 @@ class ProjFinder:
                 mask[i]=False #It wont be chosen again
                 param = self.projfunctions[p][i] #Select the corresponding parameters set
                 n=n-1 #Decrease the counter
-                X_p = Projections.proj(self.X, p, param) #Apply the projection
+                X_p = self.projections.proj(self.X, p, param) #Apply the projection
                 y_pred, err = testhyp(self.hs, X_p, self.y, D) #Apply the source hypothesis
                 if err < err_min: #If bette than previously, this error rate becomes the best rate and keep the related parameters in memory
                     err_min = err

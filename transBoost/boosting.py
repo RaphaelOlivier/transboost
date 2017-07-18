@@ -3,7 +3,7 @@
 
 @author: Sema Akkoyunlu, Raphaël Olivier
 
-Boosting core functions and a few auxiliary functions
+Boosting core algorithm
 """
 from __future__ import print_function, absolute_import, division
 import numpy as np
@@ -94,7 +94,6 @@ def test(X, y, projs, alphas):
     -------
     X : [n_examples][l1_features] (target examples)
     y : [n_examples] (labels)
-    hs : [n_examples][l2_features] -> [n_examples] (source hypothesis)
     projs : Projections (class containing n_projs projections of type [l1_features] -> [l2_features]). Also contains the source hypothesis
     alphas : [n_projs]
 
@@ -112,4 +111,25 @@ def test(X, y, projs, alphas):
     y_pred=np.sign(y_pred) #Final prediction
     err=weightedError(y_pred,y) #Final error
     return err,y_pred, errprojs
+
+def run(X, projs, alphas):
+    """ Running our projections on a target dataset : For each of them we project the examples and apply the source hypothesis.
+    Final projection is given by the sign of the weighted sum of partial predictions.
+
+    Parameters
+    -------
+    X : [n_examples][l1_features] (target examples)
+    projs : Projections (class containing n_projs projections of type [l1_features] -> [l2_features]). Also contains the source hypothesis
+    alphas : [n_projs]
+
+    Returns
+    -------
+    y_pred : [n_examples]
+    """
+    y_proj = projs.labelsList(X) #Returns the list of partial predictions for each projection and for the source hypothesis
+    y_pred = np.zeros(len(y)) #Initializing the sum
+    for i in range(len(alphas)):
+        y_pred = y_pred+alphas[i]*y_proj[i] #Adding the weighted prediction
+    y_pred=np.sign(y_pred) #Final prediction
+    return y_pred
 

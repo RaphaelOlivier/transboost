@@ -93,7 +93,7 @@ def singletest(L, l, K, hs, X_train, y_train, X_test, y_test):
     tb.setTestSet(X_test,y_test)
     
     eTrain=tb.learn()
-    eTest=tb.run()
+    _,eTest=tb.test()
     log=tb.getLog()
     print(log)
     return eTrain, eTest
