@@ -99,34 +99,45 @@ def testseries(L_list, l_list, K_list, ds_list, resultsFile=None,n=10):
     return aggres
                     
 def singletest(L, l, K, hs, X_train, y_train, X_test, y_test):
-
-    X_train = cutSeries(X_train,l)
-    X_test = cutSeries(X_test,l)
+    """
+    Tests TransBoost on given series data with given parameters.
     
-    tb = transBoost.TransBoost()
+    Parameters
+    ----------
+    L : Integer (length of source series)
+    l : Integer (length of target series)
+    K : Integer (number of boosting steps)
+    hs : [n_examples][L] -> [n_examples] (source hypothesis)
+    X_train : [n_train][l] (training target set)
+    y_train : [n_train] (training target labels)
+    X_test : [n_test][l] (testing target set)
+    y_test : [n_test] (testing target labels)
     
-    tb.setNumberSteps(K)
+    Returns
+    -------
+    eTrain : float (TransBoost training error rate)
+    eTest : float (TransBoost testing error rate)
+    """
     
-    pf = projections.ProjFinder(mode="random",timelimit=20)
+    tb = transBoost.TransBoost() #Create a TransBoost object
+    tb.setNumberSteps(K) #set number of boosting steps
+    tb.setTrainSet(X_train,y_train) #set train data
+    tb.setTestSet(X_test,y_test) #set test data
     
-    f = series.polyline
-    param= series.polyline_param(L,l)
-#    f=series.line
-#    param=series.line_param(L,l)
-     
-    pf.addFunction(f, param)
-    tb.setProjFinder(pf)
+    pf = projections.ProjFinder(mode="random",timelimit=20) #Create a projFinder object
+    f = series.polyline #a projection function
+    param= series.polyline_param(L,l) #projection various parameters
+    pf.addFunction(f, param) #add a projections collection
+    pf.setSourceHyp(hs) # set the source hypothesis
     
+    tb.setProjFinder(pf) #set the projFinder
     
-    pf.setSourceHyp(hs)
+    eTrain=tb.learn() #train TransBoost
+    _,eTest=tb.test() #test TransBoost
     
-    tb.setTrainSet(X_train,y_train)
-    tb.setTestSet(X_test,y_test)
-    
-    eTrain=tb.learn()
-    _,eTest=tb.test()
     log=tb.getLog()
-    print(log)
+    print(log) #print all informations about the experience in the shell
+    
     return eTrain, eTest
     
 def svmreg(L, l, hs, X_train, y_train, X_test, y_test):
