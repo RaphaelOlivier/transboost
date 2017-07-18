@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from series.testseries import testseries
+from series.seriesTesting import testseries
 import warnings
 warnings.filterwarnings("ignore")
 
