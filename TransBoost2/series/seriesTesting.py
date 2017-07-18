@@ -17,6 +17,7 @@ from tools.learning import testhyp
 import transBoost.transBoost as transBoost
 import transBoost.projections as projections
 import series.series as series
+from series.seriesGeneration import cutSeries
 
 def testseries(L_list, l_list, K_list, ds_list, resultsFile=None,n=10):
     cols=["full length", "cut length", "boosting steps", "dataset", "reference train score","reference test score", "transBoost train score", "transBoost test score"]
@@ -36,8 +37,8 @@ def testseries(L_list, l_list, K_list, ds_list, resultsFile=None,n=10):
                     hs=series.svmhyp(X_source, y_source)
                     for i in range(n):
                         X_train, y_train, X_test, y_test = data.randomSample(X[:], y[:], prop=(0.2,0.6))
-                        X_train = data.cutSeries(X_train,l)
-                        X_test = data.cutSeries(X_test,l)
+                        X_train = cutSeries(X_train,l)
+                        X_test = cutSeries(X_test,l)
                         href=series.svmhyp(X_train, y_train)
                         yp,eTrainRef=testhyp(href,X_train,y_train)
                         yp,eTestRef=testhyp(href,X_test,y_test)
@@ -69,8 +70,8 @@ def testseries(L_list, l_list, K_list, ds_list, resultsFile=None,n=10):
                     
 def singletest(L, l, K, hs, X_train, y_train, X_test, y_test):
 
-    X_train = data.cutSeries(X_train,l)
-    X_test = data.cutSeries(X_test,l)
+    X_train = cutSeries(X_train,l)
+    X_test = cutSeries(X_test,l)
     
     tb = transBoost.TransBoost()
     
@@ -117,7 +118,6 @@ def svmreg(L, l, hs, X_train, y_train, X_test, y_test):
 def simplifyCSV(path):
     
     df = pd.read_csv(path)
-    numcols=["source score", "reference train score","reference test score", "transBoost train score", "transBoost test score"]
 
     def simp(x):
         if(type(x)==float):

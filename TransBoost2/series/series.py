@@ -13,7 +13,6 @@ import numpy as np
 from scipy.optimize import leastsq
 
 import tools.learning as learning
-from series.seriesGeneration import cutSeries
     
 def svmhyp(X,y):
     """
@@ -78,7 +77,7 @@ def regLin_param(L,l):
     
     beg = np.arange(0,l-10,10)
     for b in beg:
-        end=np.arange(d+5,l,10)
+        end=np.arange(b+5,l,10)
         for e in end:
             yield [L, b, e]
 
@@ -101,7 +100,6 @@ def line(x,param):
     beg = param[1]
     end = param[2]
     alpha=param[3]
-    l = len(x)
     t = np.linspace(1, L, L) #times
     A = np.vstack([np.linspace(beg,end,end-beg),np.ones(end-beg)]).T #Measures on which apply linear regression
     m,c = np.linalg.lstsq(A, x[beg:end])[0] #Regression coefficients computed by least squared error
@@ -128,11 +126,11 @@ def line_param(L,l):
     alpha = np.arange(-np.pi/2, np.pi/2, np.pi/16)
     pace=l/5
     beg = np.arange(0,l-pace,pace, dtype=np.int16)
-    for d in beg:
+    for b in beg:
         end=np.arange(b+pace,l,pace, dtype=np.int16)
         for e in end:
             for a in alpha:
-                lis.append((L, d, e, a))
+                lis.append((L, b, e, a))
     return lis
 
 
@@ -221,7 +219,7 @@ def sinus(x,param):
     p0 = param[1:] #parameters of the projection function
     p1 = leastsq(errfunc, p0[:], args=(t[0:l], x))[0] #projection function after minimisation of errfunc (with updated parameters)
     x_cont = fitfunc(p1, t) #continuation of the target series
-    x_proj = np.append(x, x_c[l:L], axis =0) #projected series
+    x_proj = np.append(x, x_cont[l:L], axis =0) #projected series
     return x_proj
 
 def sinus_param(L):
