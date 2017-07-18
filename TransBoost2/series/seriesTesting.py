@@ -141,41 +141,78 @@ def singletest(L, l, K, hs, X_train, y_train, X_test, y_test):
     return eTrain, eTest
     
 def svmreg(L, l, hs, X_train, y_train, X_test, y_test):
-    print("regression")
+    """
+    An hypothesis based on naive regression. Can be used as an alternate reference hypothesis in the testseries function.
+    
+    Parameters
+    ----------
+    L : Integer (length of source series)
+    l : Integer (length of target series)
+    hs : [n_examples][L] -> [n_examples] (source hypothesis)
+    X_train : [n_train][l] (training target set)
+    y_train : [n_train] (training target labels)
+    X_test : [n_test][l] (testing target set)
+    y_test : [n_test] (testing target labels)
+    
+    Returns
+    -------
+    eTrain : float (Regression training error rate)
+    eTest : float (Regression testing error rate)
+    """
+    
     def hreg(X):
-        Z=np.zeros((X.shape[0],L))
+        Z=np.zeros((X.shape[0],L)) #Will hold the dataset of naively projected series
         for i in np.arange(X.shape[0]):
-            x = X[i,:] 
+            x = X[i,:] #for the example i
             l=len(x)
-            t = np.arange(L).reshape((L,1))
-            clfr = svm.SVR(kernel = 'linear', gamma = 0.03)
-            clfr.fit(t[:l], x)
-            Z[i,:] = np.append(x,clfr.predict(t[l:]))
-        return hs(Z)
-    y,eTrain = testhyp(hreg,X_train,y_train)
-    y,eTest = testhyp(hreg,X_test,y_test)
+            t = np.arange(L).reshape((L,1)) #times
+            clfr = svm.SVR(kernel = 'linear', gamma = 0.03) #SVR regression
+            clfr.fit(t[:l], x) #computation of the regression for example i
+            x_proj = np.append(x,clfr.predict(t[l:])) #projected series : initial series continuated with the regressed values
+            Z[i,:] = x_proj #added the projected series to the dataset
+        return hs(Z) #apply the source hypothesis to the projected dataset
+    
+    y,eTrain = testhyp(hreg,X_train,y_train) #Compute error on the training set (although no actual training)
+    y,eTest = testhyp(hreg,X_test,y_test) #Compute error on the testing set
     return eTrain, eTest
 
 def simplifyCSV(path):
+    """
+    Updates a csv file to keep only 2 significant figures after comma.
     
+    Parameters
+    ----------
+    path : String (path to the csv file)
+    """
     df = pd.read_csv(path)
-
-    def simp(x):
+    def simp(x): #auxiliary function that keeps only 2 significant figures (s.f) in a float number, and doesn't change any other type
         if(type(x)==float):
-            y=0.01*int(100*x)
-            if(y>0.1):
+            y=0.01*int(100*x) #2  at most
+            if(y>0.1): #if exactly two s.f. we keep this value
                 return y
-            else:
-                return 0.001*int(1000*x)
+            else: #if only one s.f.
+                return 0.001*int(1000*x) #we add one
         return x
-    df=df.applymap(simp)
-    df.to_csv(path[:-4]+"_simplified.csv",index=False)
+    
+    df=df.applymap(simp) #apply the function to the whole dataFrame
+    df.to_csv(path[:-4]+"_simplified.csv",index=False) #export again
     
 def displayExperience(df,x,y):
+    """
+    Plots a graph based on two column in a dataset. Used for example to plot a point for each experience, with x as the TransBoost error and y as the reference error.
+    
+    Parameters
+    ----------
+    df : pd.DataFrame
+    x : String (name of the column used as x values)
+    y : String (name of the column used as y values)
+    """
     l1=df[x].tolist()
     l2=df[y].tolist()
-    plt.plot([0.0,0.6],[0.0,0.6],'-',color="black")
-    plt.plot(l1,l2,'.',color="blue")
-    plt.xlim((0.0,0.6))
+    plt.plot([0.0,0.6],[0.0,0.6],'-',color="black") #line 'y=x'
+    plt.plot(l1,l2,'.',color="blue") #points (x[i],y[i]) for every index i
+    plt.xlim((0.0,0.6)) #Error rates are usually below 0.5 so a (0,0.6) scale is enough
     plt.ylim((0.0,0.6))
-    plt.show()
+    plt.show() #Show the graph
+    
+    

@@ -20,11 +20,11 @@ def svmhyp(X,y):
     
     Parameters
     ----------
-    X : [n_examples][L_instants] (time series)
+    X : [n_examples][L] (time series)
     y : [n_examples] (labels)
     
     Returns
-    h : [m_examples][L_instants] -> [m_examples]
+    h : [m_examples][L] -> [m_examples]
     """
     
     _,clf = learning.learnSVM(X, y, 0.03) #Get classifier
