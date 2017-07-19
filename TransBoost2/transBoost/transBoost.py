@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created in may 2017 
-
-@author: Raphaël Olivier
-
 Class to encapsulate transBoost and save results.
 """
 

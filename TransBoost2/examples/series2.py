@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul 19 10:44:07 2017
-
-@author: raphael
-
 This code computes a very large set of experiences on time series. It then displays the 2-dimensonnal graph that sums up the experience. It was used in submissions.
 It requires running series0.py previously.
 It may be very long to compute. If you want a shorter, less complete test, see series3.py
 """
 
 from __future__ import print_function, absolute_import
+import pandas as pd
 
 from series.seriesTesting import testseries, displayExperience
 

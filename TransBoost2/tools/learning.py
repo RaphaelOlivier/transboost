@@ -1,10 +1,5 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jul 17 19:03:19 2017
-
-@author: Raphaël Olivier
-
 Various useful, general learning functions
 """
 from sklearn import svm

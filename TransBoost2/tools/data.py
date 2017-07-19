@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jun 15 10:07:37 2015
-
-@author: Sema Akkoyunlu, Raphaël Olivier
-
 Files and datasets manipulation
 """
 

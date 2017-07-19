@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created in may 2017 
-
-@author: Raphaël Olivier
-
 Projection research and application
 """
 from __future__ import print_function, absolute_import

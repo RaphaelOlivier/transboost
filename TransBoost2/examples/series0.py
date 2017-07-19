@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul 19 10:49:54 2017
-
-@author: raphael
-
 This code creates time series datasets used in other example files.
 """
 

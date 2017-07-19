@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created in april 2017 
-
-@author: Raphaël Olivier
-
 functions used to generate and edit time series datasets
 """
 

@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul 19 10:48:06 2017
-
-@author: raphael
-
 This code applies TransBoost to a source dataset and target train, test and unknown dataset and prints the results.
 It requires running series0.py previously.
 """

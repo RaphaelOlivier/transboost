@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-
-@author: Sema Akkoyunlu, Raphaël Olivier
-
 Boosting core algorithm
 """
 from __future__ import print_function, absolute_import, division

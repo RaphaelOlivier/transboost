@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created in april 2017 
-
-@author: Raphaël Olivier
-
 Display functions used to write log files and print things
 """
 

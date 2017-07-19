@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 # -*- coding: utf-8 -*-
 """
-Created in may 2017 
-
-@author: Raphaël Olivier
-
-#Material for using TransBoost with time series : hypothesis and projection functions
+Material for using TransBoost with time series : hypothesis and projection functions
 """
 
 from __future__ import print_function, absolute_import
