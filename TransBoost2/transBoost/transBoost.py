@@ -9,8 +9,8 @@ Class to encapsulate transBoost and save results.
 
 from __future__ import print_function, absolute_import
 
-from tools.display import displayDict
 import transBoost.boosting as boosting
+from tools.display import displayDict
 
 class TransBoost:
     """
