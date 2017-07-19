@@ -48,17 +48,17 @@ class TransBoost:
         return self.X_test,self.y_test
 
     def checkparamslearning(self): #Checks that all parameters are defined to start the learning phase
-        if(self.X_train==None or self.y_train==None or self.K==None or self.projFinder==None):
+        if(self.X_train is None or self.y_train is None or self.K is None or self.projFinder is None):
             print("param error")
             raise
     
     def checkparamstesting(self): #Checks that all parameters are defined to start the test phase
-        if(self.X_test==None or self.y_test==None or self.projections==None or self.alphas==None):
+        if(self.X_test is None or self.y_test is None or self.projections is None or self.alphas is None):
             print("param error")
             raise
             
     def checkparamsrunning(self): #Checks that all parameters are defined to run the computed projections on a dataset
-        if(self.projections==None or self.alphas==None):
+        if(self.projections is None or self.alphas is None):
             print("param error")
             raise
     
@@ -114,7 +114,7 @@ class TransBoost:
         X : [n_examples][l1_features]
         """
         self.checkparamsrunning() #Everything in order to compute prediction
-        pred = boosting.run(self.X, self.projections, self.alphas) #Apply the projections to the given set.
+        pred = boosting.run(X, self.projections, self.alphas) #Apply the projections to the given set.
         
         return pred
 
@@ -129,7 +129,7 @@ class TransBoost:
         ----------
         logFile : String (path to the file where log should be saved) | None (log printed in shell)
         """
-        if logFile==None:
+        if logFile is None:
             for i in range(len(self.log)):
                 print(i)
                 print(self.log[i])

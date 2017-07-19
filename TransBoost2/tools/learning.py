@@ -23,7 +23,7 @@ def weightedError(y, y_pred, D=None):
     -------
     err : float (classification error)
     """
-    if D==None: #If no weights we just use uniform distribution
+    if D is None: #If no weights we just use uniform distribution
         N = len(y)
         D = np.array(np.ones(N)/N)
     err = .0

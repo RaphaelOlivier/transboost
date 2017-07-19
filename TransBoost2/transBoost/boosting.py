@@ -127,7 +127,7 @@ def run(X, projs, alphas):
     y_pred : [n_examples]
     """
     y_proj = projs.labelsList(X) #Returns the list of partial predictions for each projection and for the source hypothesis
-    y_pred = np.zeros(len(y)) #Initializing the sum
+    y_pred = np.zeros(X.shape[0]) #Initializing the sum
     for i in range(len(alphas)):
         y_pred = y_pred+alphas[i]*y_proj[i] #Adding the weighted prediction
     y_pred=np.sign(y_pred) #Final prediction
