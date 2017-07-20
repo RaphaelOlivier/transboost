@@ -93,6 +93,15 @@ Functions that help create of manipulate series datasets.
 * *cutSeries* : given a dataset of series *X* of length *L* and a length *l* < *L*, returns the dataset whose elements are the l first measures of the elements of X.
 #### seriesTesting
 Functions used to launch large sets of experiences to apply transBoost on time series and save and display the results.
+* *testseries* : the main function. It takes lists of parameters (length of source series, length of target series, number of boosting steps) and dataset paths, along with a result file path and a number *n*. For each possible combinaison of parameters and datasets, a source hypothesis is built and *n* experiences are run. An experience is :
+    * Select training and testing sample of cut series.
+    * Train and test a naive target classifier (a rbf svm on target domain is harcoded).
+    * Train and test TransBoost.
+Then for each error mean and standard deviation on the *n* experiences are computed, and stored as csv in the result file.
+* *singletest* : an auxiliary function used by *testseries* to run transBoost once. It defines and initializes **TransBoost** and **ProjFinder** objects, runs the algorithm and returns training and testing errors. It also prints logs in shell.
+* svmreg : an auxiliary function, that can be used instead of target svm as a naive classifier. It computes regression on incomplete series to naively project them on source domain and apply the source hypothesis. The function returns training and testing errors.
+* *simplifyCSV* : testseries generates csv with too precise floats to read. This function takes a csv path and simplifies it to two significant figures after comma.
+* *displayExperience* : takes a pandas dataFrame (e.g. read from a csv) and two column names. It plots a graph of points, one column being the x values and the other the y values. It can be used to show how TransBoost performs compared to the naive target classifier.
 ### examples
 ## Differences in TransBoost3
 TODO
