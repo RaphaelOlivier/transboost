@@ -20,8 +20,23 @@ This repository contains an implementation of the TransBoost algorithm, a transf
 * scikit-learn 0.18.1
 * scipy 0.19.0
 * tensorflow 1.1.0
-### Execute the code
+
 ### Apply TransBoost
+To apply TransBoost with this implementation, you will need the *transBoost* package. What you have to do is :
+* Build or gather your labelled target data (training and testing).
+* Set a number of boosting steps.
+* Create a TransBoost object and feed it with your data and number of steps. (see *transBoost.TransBoost*).
+* Choose a projection search mode and create a ProjFinder object (see *projections.ProjFinder*).
+* Build or define your source hypothesis (function in stupid/random mode, graph in neural mode) and feed it to your ProjFinder.
+* Define your projection space (in stupid/random mode define functions and their parameters sets to explore ; in neural mode (TransBoost3) define the properties of your projection graph) and feed it to your projFinder.
+* Feed the ProjFinder to the TransBoost object.
+* __learn__ (*TransBoost.learn*) and __test__ (*TransBoost.test*).
+
+Take a look at the *tools* package to help you with the preliminary steps.
+
+### Execute the code
+You should run your python scripts from the main folder (TransBoost2 or TransBoost3) for the imports to work smoothly. 
+For example, in this actual code the only executable file is *main.py*, which imports and calls one of the example files. Alternatively, you can add this folder to your PYTHONPATH.
 
 ## Detailed description of TransBoost2
 This version contains 4 packages :
