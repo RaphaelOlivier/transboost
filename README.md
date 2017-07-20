@@ -1,12 +1,25 @@
 # transboost -
-This repository contains an implementation of the TransBoost algorithm, a transfer learning algorithm based on boosting of weak projections from the target domain to the source domain. There are two versions : TransBoost3 requires python3 and has additional features. TransBoost2 can be run both by python2 and python3.
+This repository contains an implementation of the TransBoost algorithm, a transfer learning algorithm based on boosting of weak projections from the target domain to the source domain. There are two versions : TransBoost3 requires python3 and has additional features, using tensorflow (which seems to bring up issues in python2). TransBoost2 can be run both by python2 and python3.
 
 *Authors* : Antoine Cornuéjols, Raphaël Olivier, Sema Akkoyunlu, Pierre-Alexandre Murena
 
 ## Usage
 ### Requirements
 #### in TransBoost2
+* python 2.7.13
+* matplotlib 2.0.2
+* numpy 1.12.1
+* pandas 0.20.1
+* scikit-learn 0.18.1
+* scipy 0.19.0
 #### in TransBoost3
+* python 3.5.3
+* matplotlib2.0.2
+* numpy 1.12.1
+* pandas 0.20.2
+* scikit-learn 0.18.1
+* scipy 0.19.0
+* tensorflow 1.1.0
 ### Execute the code
 ### Apply TransBoost
 
