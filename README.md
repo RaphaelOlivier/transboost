@@ -2,7 +2,15 @@
 This repository contains an implementation of the TransBoost algorithm, a transfer learning algorithm based on boosting of weak projections from the target domain to the source domain. There are two versions : TransBoost3 requires python3 and has additional features. TransBoost2 can be run both by python2 and python3.
 
 *Authors* : Antoine Cornuéjols, Raphaël Olivier, Sema Akkoyunlu, Pierre-Alexandre Murena
-## Description of TransBoost2
+
+## Usage
+### Requirements
+#### in TransBoost2
+#### in TransBoost3
+### Execute the code
+### Apply TransBoost
+
+## Detailed description of TransBoost2
 This version contains 4 packages :
 * *transBoost* : the core package that contains most of the actual algorithm.
 * *tools* : auxiliary functions, used in the classes and functions in transBoost and useful for developpers that want to use transBoost.
@@ -55,13 +63,21 @@ Its methods are :
 * *test* : the "testing" function. Calls *boosting.test* on testing data, saves logs and returns the testing error.
 * *run* : the prediction function. Calls *boosting.run* on given data and returns the predicted labels.
 ### tools
+#### data.py
+Generic functions that manipulates datasets and files. Datasets are basically always numpy arrays (one for the features, one for the labels).
+* *importCSV* : takes a path and the csv delimiter, imports a csv into two numpy arrays X (features) and y (labels). The csv must hold labels in its first column.
+* *exportCSV* : takes two numpy arrays a path and a delimiter and exports the datasets in csv format at the path, with labels in its first column.
+* *randomShuffle* : takes a dataset, labels, and a tuple *prop* of positive floats whose sum should not exceed 1. Returns a tuple of disjoint samples of the dataset, with fractions of its elements equal to the elements of *prop*.
+#### display.py
+Functions used to print collections. They have an optional argument *logFile* containing a path. If filled, the collection will be printed and saved in the file. If not, it will be printed on standard output. They also have an optional argument *title*, a String that could be used as a header in the document. There is *displayDict* for dictionnaries and *displayList* for lists.
+#### learning.py
+Generic learning functions, useful to build hypothesis or compute errors.
+* *error* : given correct and predicted data, it computes the prediction error, that is the proportion of wrong predictions.
+* *weightedError* : the same except each example is assigned a weight and counts as much in the error rate. An optional rgument D holds weights ; if not filled uniform weights will be used (that is, usual error).
+* *testhyp* : given a hypothesis, features, labels and weights, classifies the data and returns the prediction and the weighted error.
+* *learnSVM* : takes training data X and labels y. Returns a hypothesis based on rbf kernel SVM fitted with the given data. An argument gamma may take the coefficient for svm (see sklearn.svm.SVC).
+* *testSVM* : takes a trained kernel, features, labels and weights. Returns weighted error and prediction.
 ### series
 ### examples
 ## Differences in TransBoost3
 TODO
-## Usage
-### Requirements
-#### in TransBoost2
-#### in TransBoost3
-### Execute the code
-### Apply TransBoost
