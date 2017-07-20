@@ -86,7 +86,7 @@ It is designed to us random mode in the **ProjFinder** class.
 #### series.py
 Functions that help building hypothesis on time series. One is *svmhyp* : given data and labels, it returns a svm-based hypothesis using *learning.learnSVM*.
 
-The others are projection function that help filling the projFinder function. For each function *f*, there is a *f_param* function that, given some information (typically the lengths of source and target series), will return a collection (or yield a generator) of parameters sets. Look at each one for some details
+The others are projection function that help filling the projFinder function. For each function *f*, there is a *f_param* function that, given some information (typically the lengths of source and target series), will return a collection (or yield a generator) of parameters sets. Look at each one for some details.
 #### seriesGeneration.py
 Functions that help create of manipulate series datasets.
 * *genere_dataset* : given a number of elements, a length of series, a path and various sets parameters (ranges of oscillations, deviations of noise, slopes of main classes,...), builds and returns a dataset.
@@ -97,11 +97,21 @@ Functions used to launch large sets of experiences to apply transBoost on time s
     * Select training and testing sample of cut series.
     * Train and test a naive target classifier (a rbf svm on target domain is harcoded).
     * Train and test TransBoost.
+    
 Then for each error mean and standard deviation on the *n* experiences are computed, and stored as csv in the result file.
 * *singletest* : an auxiliary function used by *testseries* to run transBoost once. It defines and initializes **TransBoost** and **ProjFinder** objects, runs the algorithm and returns training and testing errors. It also prints logs in shell.
 * svmreg : an auxiliary function, that can be used instead of target svm as a naive classifier. It computes regression on incomplete series to naively project them on source domain and apply the source hypothesis. The function returns training and testing errors.
 * *simplifyCSV* : testseries generates csv with too precise floats to read. This function takes a csv path and simplifies it to two significant figures after comma.
 * *displayExperience* : takes a pandas dataFrame (e.g. read from a csv) and two column names. It plots a graph of points, one column being the x values and the other the y values. It can be used to show how TransBoost performs compared to the naive target classifier.
 ### examples
+Each file here has its code in a *run* function. It is called in the *main.py* file.
+#### series0.py
+Generates and saves the datasets used in the other series examples.
+#### series1.py
+A simple use of TransBoost on one dataset.
+#### series2.py
+The set of experiences we used to test transBoost. It mainly calls *series.seriesGeneration.testseries* with quite a large number of parameters.
+#### series3.py
+A smaller, computable set of experiences to show how *series.seriesGeneration.testseries* works.
 ## Differences in TransBoost3
 TODO
