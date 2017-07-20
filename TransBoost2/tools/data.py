@@ -7,7 +7,7 @@ from __future__ import print_function, absolute_import
 import numpy as np
 import csv
     
-def importCSV(path, delimiter):
+def importCSV(path, delimiter='\t'):
     """
     Import a csv file into a dataset (numpy arrays). The csv file must have examples in lines with the first column being labels, the others being features.
     
@@ -38,7 +38,7 @@ def importCSV(path, delimiter):
         
     return X, y
     
-def exportCSV(X,y,chemin,delimiter):
+def exportCSV(X,y,chemin,delimiter='\t'):
     
     """
     Export a dataset (numpy arrays) into a csv file. The file will have examples in lines with the first column being labels, the others being features.
@@ -80,6 +80,3 @@ def randomSample(X, y,prop=(0.3)):
         I = np.delete(I, i)
         
     return tuple(l)
-
-def inverseLabels(y): #Inverse all labels
-    return -y

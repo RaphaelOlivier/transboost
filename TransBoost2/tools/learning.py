@@ -5,29 +5,6 @@ Various useful, general learning functions
 from sklearn import svm
 import numpy as np
 
-def weightedError(y, y_pred, D=None):
-    """ Error rate is the weighted sum of wrongly predicted examples
-    
-    Parameters
-    -------
-    y : [n_examples] (correct labels)
-    y_pred : [n_examples] (predcted labels)
-    D : [n_exemples] (weights given to each example)
-    
-    Returns 
-    -------
-    err : float (classification error)
-    """
-    if D is None: #If no weights we just use uniform distribution
-        N = len(y)
-        D = np.array(np.ones(N)/N)
-    err = .0
-    p = y * y_pred #Product of expected and predicted classes
-    for i in range(len(p)):
-        if p[i] == -1.: #Negative product means wrong class
-            err += D[i]
-    return err
-
 def error(y, y_pred):
     """Error rate is the proportion  of wrongly predicted examples
     
@@ -50,6 +27,28 @@ def error(y, y_pred):
     err/=N
     return err
 
+def weightedError(y, y_pred, D=None):
+    """ Error rate is the weighted sum of wrongly predicted examples
+    
+    Parameters
+    -------
+    y : [n_examples] (correct labels)
+    y_pred : [n_examples] (predcted labels)
+    D : [n_exemples] (weights given to each example)
+    
+    Returns 
+    -------
+    err : float (classification error)
+    """
+    if D is None: #If no weights we just use uniform distribution
+        N = len(y)
+        D = np.array(np.ones(N)/N)
+    err = .0
+    p = y * y_pred #Product of expected and predicted classes
+    for i in range(len(p)):
+        if p[i] == -1.: #Negative product means wrong class
+            err += D[i]
+    return err
 def testhyp(h,X,y,D=None):
     """
     Apply the given hypothesis and computes the weighted error.
@@ -71,7 +70,7 @@ def testhyp(h,X,y,D=None):
     return yp,err
     
 
-def learnSVM(X, y, gamma,):
+def learnSVM(X, y, gamma=0.03):
     """SVM learning with gaussian kernel
     
     Parameters
