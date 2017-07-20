@@ -75,9 +75,24 @@ Generic learning functions, useful to build hypothesis or compute errors.
 * *error* : given correct and predicted data, it computes the prediction error, that is the proportion of wrong predictions.
 * *weightedError* : the same except each example is assigned a weight and counts as much in the error rate. An optional rgument D holds weights ; if not filled uniform weights will be used (that is, usual error).
 * *testhyp* : given a hypothesis, features, labels and weights, classifies the data and returns the prediction and the weighted error.
-* *learnSVM* : takes training data X and labels y. Returns a hypothesis based on rbf kernel SVM fitted with the given data. An argument gamma may take the coefficient for svm (see sklearn.svm.SVC).
+* *learnSVM* : takes training data X and labels y. Returns a rbf kernel SVM fitted with the given data, along with the training error. An argument gamma may take the coefficient for svm (see sklearn.svm.SVC).
 * *testSVM* : takes a trained kernel, features, labels and weights. Returns weighted error and prediction.
 ### series
+Time series are a particular application of transfer lerning, where the source domain contains time series, and the target domain contains similar time series, but shorter. It may be very useful to learn how to classify short, incomplete time series, while your labelled dataset are mostly composed of complete series ; hence the idea to project incomplete series on complete ones using TransBoost.
+
+Our datasets contain long series. To classify short ones, we will cut them.
+
+It is designed to us random mode in the **ProjFinder** class.
+#### series.py
+Functions that help building hypothesis on time series. One is *svmhyp* : given data and labels, it returns a svm-based hypothesis using *learning.learnSVM*.
+
+The others are projection function that help filling the projFinder function. For each function *f*, there is a *f_param* function that, given some information (typically the lengths of source and target series), will return a collection (or yield a generator) of parameters sets. Look at each one for some details
+#### seriesGeneration.py
+Functions that help create of manipulate series datasets.
+* *genere_dataset* : given a number of elements, a length of series, a path and various sets parameters (ranges of oscillations, deviations of noise, slopes of main classes,...), builds and returns a dataset.
+* *cutSeries* : given a dataset of series *X* of length *L* and a length *l* < *L*, returns the dataset whose elements are the l first measures of the elements of X.
+#### seriesTesting
+Functions used to launch large sets of experiences to apply transBoost on time series and save and display the results.
 ### examples
 ## Differences in TransBoost3
 TODO
