@@ -42,7 +42,18 @@ We also need a class to store a list of projections, apply projections and compo
     
 The **Projections** class does all this for projections in the format used in stupid/random research. Other classes may be used as long as they have the methods above. Another is defined in TransBoost3 for neural mode. **Projections**'s attributes are the source hypothesis (function that returns labels of a source dataset), a list of projection functions and the corresponding list of parameters.
 #### transBoost.py
+This file defines the **TransBoost** class. It does not hold much computation, but contains all required parameters and data to run TransBoost, encapsulates calls to *boosting* functions and holds the logs and results of any training or testing phase. Once a **ProjFinder** is set up, it is the only class that should be called in a TransBoost application.
 
+Its attibutes are training data, testing data, the number of boosting steps, a ProjFinder object, a projections object, a *alphas* list that should contain coefficients of selected projections and a *log* list that contains all logs.
+
+Its methods are :
+* A no-parameters constructor.
+* Attribute-reading and writing methods.
+* Controle methods used to check parameters are set.
+* Log methods used to print, return and clear the previous logs.
+* *learn* : the "training" function. Calls *boosting.boosting* on training data, saves alphas, projections and logs. Also calls *boosting.test* on training data, to compute and return training error.
+* *test* : the "testing" function. Calls *boosting.test* on testing data, saves logs and returns the testing error.
+* *run* : the prediction function. Calls *boosting.run* on given data and returns the predicted labels.
 ### tools
 ### series
 ### examples
